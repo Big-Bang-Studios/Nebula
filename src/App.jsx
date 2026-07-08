@@ -3,9 +3,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Play, Pause, Sparkles, Clock, Settings, Film, History, Loader2, Share2, Wand2, MonitorPlay, Menu, X, RefreshCw, CloudRain, Snowflake, Flame, Wind, Zap, Gauge, Volume2, VolumeX, Palette, Layers, ChevronRight, ChevronLeft, Download } from 'lucide-react';
 
 /**
- * NEBULA AI VIDEO GENERATOR (v6.4 - Vercel Fix Edition)
+ * NEBULA AI VIDEO GENERATOR (v6.5 - Vercel Safe Edition)
  * * Features:
- * * - Fixed build errors
+ * * - Fixed build errors (Bulletproof syntax for Vercel)
  * * - Frame Download feature in player
  * * - Extra descriptions for FX and Turbo modes
  * * - Custom Nebula SVG Brand Logo
@@ -160,14 +160,20 @@ const audioEngine = new AudioSynth();
 
 // --- VFX COMPONENTS ---
 
-const FilmGrain = () => (
-  <div className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-overlay z-10" 
-       style={{
-         backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-         animation: 'grain 1s steps(5) infinite'
-       }}
-  />
-);
+const FilmGrain = () => {
+  // Saved as a clean double-quoted string to prevent GitHub/Vercel syntax errors
+  const bgUrl = "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")";
+  
+  return (
+    <div 
+      className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-overlay z-10" 
+      style={{
+        backgroundImage: bgUrl,
+        animation: 'grain 1s steps(5) infinite'
+      }}
+    />
+  );
+};
 
 const SpeedLines = () => {
   const lines = useMemo(() => Array.from({ length: 15 }).map((_, i) => ({
@@ -762,5 +768,6 @@ const App = () => {
 };
 
 export default App;
+
 
 ```
