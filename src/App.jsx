@@ -3,8 +3,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Play, Pause, Sparkles, Clock, Settings, Film, History, Loader2, Share2, Wand2, MonitorPlay, Menu, X, RefreshCw, CloudRain, Snowflake, Flame, Wind, Zap, Gauge, Volume2, VolumeX, Palette, Layers, ChevronRight, ChevronLeft, Download } from 'lucide-react';
 
 /**
- * NEBULA AI VIDEO GENERATOR (v6.4 - Download Edition)
+ * NEBULA AI VIDEO GENERATOR (v6.4 - Vercel Fix Edition)
  * * Features:
+ * * - Fixed build errors
  * * - Frame Download feature in player
  * * - Extra descriptions for FX and Turbo modes
  * * - Custom Nebula SVG Brand Logo
@@ -585,6 +586,9 @@ const App = () => {
                              <div className="w-16 h-16 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center border border-white/10 backdrop-blur-md shadow-2xl">
                                 {currentTime >= selectedDuration ? <RefreshCw className="w-6 h-6 text-white" /> : <Play className="w-6 h-6 text-white fill-white ml-1" />}
                              </div>
+                             <span className="text-sm font-semibold tracking-wide text-white">
+                                {currentTime >= selectedDuration ? 'Replay Video' : 'Play Video'}
+                             </span>
                          </div>
                       </div>
                     )}
@@ -758,6 +762,5 @@ const App = () => {
 };
 
 export default App;
-
 
 ```
