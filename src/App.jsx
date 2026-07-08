@@ -3,9 +3,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Play, Pause, Sparkles, Clock, Settings, Film, History, Loader2, Share2, Wand2, MonitorPlay, Menu, X, RefreshCw, CloudRain, Snowflake, Flame, Wind, Zap, Gauge, Volume2, VolumeX, Palette, Layers, ChevronRight, ChevronLeft, Download } from 'lucide-react';
 
 /**
- * NEBULA AI VIDEO GENERATOR (v6.5 - Vercel Safe Edition)
+ * NEBULA AI VIDEO GENERATOR (v6.6 - Bulletproof Vercel Edition)
  * * Features:
- * * - Fixed build errors (Bulletproof syntax for Vercel)
+ * * - ZERO backticks used (Prevents GitHub/Mobile clipboard corruption)
  * * - Frame Download feature in player
  * * - Extra descriptions for FX and Turbo modes
  * * - Custom Nebula SVG Brand Logo
@@ -35,13 +35,9 @@ const NebulaIcon = ({ className = "w-8 h-8" }) => (
       </filter>
     </defs>
     
-    {/* Outer Orbit */}
     <ellipse cx="50" cy="50" rx="38" ry="12" transform="rotate(-30 50 50)" stroke="url(#nebulaGrad1)" strokeWidth="4" strokeLinecap="round" filter="url(#glow)"/>
-    {/* Inner Orbit */}
     <ellipse cx="50" cy="50" rx="38" ry="12" transform="rotate(30 50 50)" stroke="url(#nebulaGrad2)" strokeWidth="4" strokeLinecap="round" filter="url(#glow)"/>
-    {/* Core Star */}
     <path d="M50 25 L53 45 L75 50 L53 55 L50 75 L47 55 L25 50 L47 45 Z" fill="white" filter="url(#glow)"/>
-    {/* Center Core */}
     <circle cx="50" cy="50" r="4" fill="#ffffff" />
   </svg>
 );
@@ -65,7 +61,7 @@ class AudioSynth {
   }
 
   async resume() {
-    if (this.ctx && this.ctx.state === 'suspended') {
+    if (this.ctx && this.ctx.state === "suspended") {
       await this.ctx.resume();
     }
   }
@@ -80,7 +76,6 @@ class AudioSynth {
     this.gainNode.gain.cancelScheduledValues(t);
     this.gainNode.gain.setValueAtTime(0.1, t);
 
-    // Base Texture (Noise)
     const bufferSize = this.ctx.sampleRate * 2;
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -93,15 +88,15 @@ class AudioSynth {
 
     const filter = this.ctx.createBiquadFilter();
     
-    if (type === 'rain') {
-      filter.type = 'lowpass';
+    if (type === "rain") {
+      filter.type = "lowpass";
       filter.frequency.value = 600; 
       this.gainNode.gain.value = 0.2;
-    } else if (type === 'fast') {
-      filter.type = 'lowpass';
+    } else if (type === "fast") {
+      filter.type = "lowpass";
       filter.frequency.value = 200; 
       const osc = this.ctx.createOscillator();
-      osc.type = 'sawtooth';
+      osc.type = "sawtooth";
       osc.frequency.setValueAtTime(60, t);
       osc.frequency.linearRampToValueAtTime(150, t + 5); 
       const oscGain = this.ctx.createGain();
@@ -109,12 +104,12 @@ class AudioSynth {
       osc.connect(oscGain).connect(this.ctx.destination);
       this.oscillators.push(osc);
       osc.start();
-    } else if (type === 'anime') {
-        filter.type = 'highpass';
+    } else if (type === "anime") {
+        filter.type = "highpass";
         filter.frequency.value = 800;
         this.gainNode.gain.value = 0.05;
         const osc = this.ctx.createOscillator();
-        osc.type = 'sine';
+        osc.type = "sine";
         osc.frequency.value = 880; 
         const oscGain = this.ctx.createGain();
         oscGain.gain.value = 0.05;
@@ -122,10 +117,10 @@ class AudioSynth {
         this.oscillators.push(osc);
         osc.start();
     } else {
-      filter.type = 'lowpass';
+      filter.type = "lowpass";
       filter.frequency.value = 100;
       const osc = this.ctx.createOscillator();
-      osc.type = 'sine';
+      osc.type = "sine";
       osc.frequency.value = 50; 
       const oscGain = this.ctx.createGain();
       oscGain.gain.value = 0.15;
@@ -161,7 +156,6 @@ const audioEngine = new AudioSynth();
 // --- VFX COMPONENTS ---
 
 const FilmGrain = () => {
-  // Saved as a clean double-quoted string to prevent GitHub/Vercel syntax errors
   const bgUrl = "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E\")";
   
   return (
@@ -169,7 +163,7 @@ const FilmGrain = () => {
       className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-overlay z-10" 
       style={{
         backgroundImage: bgUrl,
-        animation: 'grain 1s steps(5) infinite'
+        animation: "grain 1s steps(5) infinite"
       }}
     />
   );
@@ -189,10 +183,10 @@ const SpeedLines = () => {
           key={i} 
           className="absolute bg-gradient-to-r from-transparent via-white/30 to-transparent w-[300px] h-[1px]"
           style={{
-            transform: `rotate(${line.rotate}deg) translateX(400px)`,
-            animation: `warpSpeed 0.3s linear infinite`,
-            animationDelay: `${line.delay}s`,
-            width: `${line.length}%`
+            transform: "rotate(" + line.rotate + "deg) translateX(400px)",
+            animation: "warpSpeed 0.3s linear infinite",
+            animationDelay: line.delay + "s",
+            width: line.length + "%"
           }}
         />
       ))}
@@ -202,25 +196,25 @@ const SpeedLines = () => {
 
 const Particles = ({ type }) => {
   const particles = useMemo(() => {
-    const count = type === 'rain' ? 80 : type === 'snow' ? 50 : 30;
+    const count = type === "rain" ? 80 : type === "snow" ? 50 : 30;
     return Array.from({ length: count }).map((_, i) => ({
-      left: Math.random() * 100 + '%',
-      animationDuration: (Math.random() * 2 + 0.5) + 's',
-      animationDelay: -(Math.random() * 2) + 's',
+      left: Math.random() * 100 + "%",
+      animationDuration: (Math.random() * 2 + 0.5) + "s",
+      animationDelay: -(Math.random() * 2) + "s",
       opacity: Math.random() * 0.5 + 0.3,
     }));
   }, [type]);
 
-  if (type === 'rain') {
+  if (type === "rain") {
     return (
       <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
         {particles.map((p, i) => (
           <div key={i} className="absolute w-[1px] h-12 bg-blue-100/40"
                style={{
                  left: p.left,
-                 top: '-20px',
-                 transform: 'rotate(10deg)',
-                 animation: `rain ${p.animationDuration} linear infinite`,
+                 top: "-20px",
+                 transform: "rotate(10deg)",
+                 animation: "rain " + p.animationDuration + " linear infinite",
                  animationDelay: p.animationDelay,
                  opacity: p.opacity
                }}
@@ -235,7 +229,7 @@ const Particles = ({ type }) => {
 // --- MAIN APP ---
 
 const App = () => {
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedVideo, setGeneratedVideo] = useState(null);
   const [history, setHistory] = useState([]);
@@ -248,11 +242,11 @@ const App = () => {
   const [currentFrameIndex, setCurrentFrameIndex] = useState(0);
   
   // Settings
-  const [activeEffect, setActiveEffect] = useState('none'); 
-  const [motionMode, setMotionMode] = useState('fast'); 
+  const [activeEffect, setActiveEffect] = useState("none"); 
+  const [motionMode, setMotionMode] = useState("fast"); 
   const [selectedDuration, setSelectedDuration] = useState(15);
-  const [selectedStyle, setSelectedStyle] = useState('Cinematic');
-  const [aspectRatio, setAspectRatio] = useState('16:9');
+  const [selectedStyle, setSelectedStyle] = useState("Cinematic");
+  const [aspectRatio, setAspectRatio] = useState("16:9");
   
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
@@ -286,8 +280,8 @@ const App = () => {
   // Audio Sync
   useEffect(() => {
     if (isPlaying && generatedVideo) {
-      let audioType = generatedVideo.mode === 'fast' ? 'fast' : generatedVideo.effect;
-      if (generatedVideo.style === 'Anime') audioType = 'anime';
+      let audioType = generatedVideo.mode === "fast" ? "fast" : generatedVideo.effect;
+      if (generatedVideo.style === "Anime") audioType = "anime";
       audioEngine.playAtmosphere(audioType);
     } else {
       audioEngine.stop();
@@ -311,11 +305,10 @@ const App = () => {
     if (e) e.stopPropagation();
     if (!generatedVideo || !generatedVideo.frames || generatedVideo.frames.length === 0) return;
     
-    // Download the currently viewed frame
     const currentFrameData = generatedVideo.frames[currentFrameIndex];
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = currentFrameData;
-    link.download = `nebula_export_${generatedVideo.id}_frame.png`;
+    link.download = "nebula_export_" + generatedVideo.id + "_frame.png";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -333,20 +326,20 @@ const App = () => {
     audioEngine.stop();
 
     const lower = prompt.toLowerCase();
-    let effect = 'none';
-    if (lower.includes('rain')) effect = 'rain';
-    else if (lower.includes('snow')) effect = 'snow';
+    let effect = "none";
+    if (lower.includes("rain")) effect = "rain";
+    else if (lower.includes("snow")) effect = "snow";
     
-    const baseStyle = selectedStyle === 'Cinematic' ? 'cinematic shot, 8k, photorealistic, anamorphic lens' :
-                      selectedStyle === 'Anime' ? 'anime style, studio ghibli, vibrant, 2d' :
-                      selectedStyle === '3D' ? '3d render, unreal engine 5, volumetric lighting' :
-                      'raw photo, dslr, realistic texture';
+    const baseStyle = selectedStyle === "Cinematic" ? "cinematic shot, 8k, photorealistic, anamorphic lens" :
+                      selectedStyle === "Anime" ? "anime style, studio ghibli, vibrant, 2d" :
+                      selectedStyle === "3D" ? "3d render, unreal engine 5, volumetric lighting" :
+                      "raw photo, dslr, realistic texture";
     
     const sequencePrompts = [
-        `${baseStyle}, establishing shot, ${prompt}`,
-        `${baseStyle}, dynamic action angle, motion blur, ${prompt}`,
-        `${baseStyle}, detailed close up shot, depth of field, ${prompt}`,
-        `${baseStyle}, wide cinematic perspective, atmospheric, ${prompt}`
+        baseStyle + ", establishing shot, " + prompt,
+        baseStyle + ", dynamic action angle, motion blur, " + prompt,
+        baseStyle + ", detailed close up shot, depth of field, " + prompt,
+        baseStyle + ", wide cinematic perspective, atmospheric, " + prompt
     ];
 
     const progressInterval = setInterval(() => {
@@ -358,13 +351,13 @@ const App = () => {
 
       const imagePromises = sequencePrompts.map(p => 
         fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`,
+            "https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=" + apiKey,
             {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 instances: [{ prompt: p }],
-                parameters: { sampleCount: 1, aspectRatio: aspectRatio === '16:9' ? '16:9' : '9:16' },
+                parameters: { sampleCount: 1, aspectRatio: aspectRatio === "16:9" ? "16:9" : "9:16" },
             }),
             }
         ).then(res => res.json())
@@ -374,11 +367,11 @@ const App = () => {
       
       const frames = results.map(data => 
         data.predictions?.[0]?.bytesBase64Encoded 
-          ? `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`
+          ? "data:image/png;base64," + data.predictions[0].bytesBase64Encoded
           : null
       ).filter(Boolean);
 
-      if (frames.length === 0) throw new Error('No frames generated');
+      if (frames.length === 0) throw new Error("No frames generated");
 
       const newVideo = {
         id: Date.now(),
@@ -415,17 +408,17 @@ const App = () => {
     const timeInCurrentFrame = currentTime % timePerFrame;
     const frameProgress = timeInCurrentFrame / timePerFrame;
 
-    if (motionMode === 'fast') {
+    if (motionMode === "fast") {
       const scale = 1 + (frameProgress * 0.15); 
-      return `scale(${scale})`;
+      return "scale(" + scale + ")";
     } else {
-      return `scale(1.1) translateX(${frameProgress * -2}%)`;
+      return "scale(1.1) translateX(" + (frameProgress * -2) + "%)";
     }
   };
 
   const formatTime = (time) => {
     const s = Math.floor(time);
-    return `00:${s < 10 ? '0' : ''}${s}`;
+    return "00:" + (s < 10 ? "0" : "") + s;
   };
 
   const handleSeek = (e) => {
@@ -440,21 +433,12 @@ const App = () => {
   return (
     <div className="h-screen w-full bg-slate-950 text-slate-100 font-sans selection:bg-purple-500/30 overflow-hidden flex flex-col md:flex-row">
       
-      <style>{`
-        @keyframes warpSpeed {
-          0% { opacity: 0; transform: rotate(var(--r)) translateX(100px) scaleX(0.1); }
-          50% { opacity: 0.8; }
-          100% { opacity: 0; transform: rotate(var(--r)) translateX(600px) scaleX(1.5); }
-        }
-        @keyframes grain { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-5%, 5%); } }
-        @keyframes rain { 0% { transform: translateY(0); opacity:0; } 20% { opacity:1; } 100% { transform: translateY(600px); opacity:0; } }
-      `}</style>
+      <style>
+        {"@keyframes warpSpeed { 0% { opacity: 0; transform: rotate(var(--r)) translateX(100px) scaleX(0.1); } 50% { opacity: 0.8; } 100% { opacity: 0; transform: rotate(var(--r)) translateX(600px) scaleX(1.5); } } @keyframes grain { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-5%, 5%); } } @keyframes rain { 0% { transform: translateY(0); opacity:0; } 20% { opacity:1; } 100% { transform: translateY(600px); opacity:0; } }"}
+      </style>
 
       {/* Sidebar */}
-      <div className={`
-        fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex flex-col shrink-0
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+      <div className={"fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex flex-col shrink-0 " + (isSidebarOpen ? "translate-x-0" : "-translate-x-full")}>
         <div className="p-4 border-b border-slate-800 flex items-center justify-between">
            <div className="flex items-center gap-3">
             <NebulaIcon className="w-8 h-8" />
@@ -488,7 +472,7 @@ const App = () => {
                   setIsSidebarOpen(false);
                   audioEngine.stop();
                 }}
-                className={`group relative rounded-xl overflow-hidden cursor-pointer border transition-all shrink-0 ${generatedVideo?.id === video.id ? 'border-purple-500/50 ring-1 ring-purple-500/20' : 'border-slate-800 hover:border-slate-700'}`}
+                className={"group relative rounded-xl overflow-hidden cursor-pointer border transition-all shrink-0 " + (generatedVideo && generatedVideo.id === video.id ? "border-purple-500/50 ring-1 ring-purple-500/20" : "border-slate-800 hover:border-slate-700")}
               >
                 <img src={video.thumbnail} alt="thumb" className="w-full h-16 object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 to-transparent flex flex-col justify-end p-2">
@@ -523,7 +507,7 @@ const App = () => {
           
           <div className="w-full max-w-5xl space-y-4 my-auto min-h-[300px]">
             {/* VIDEO CONTAINER */}
-            <div className={`relative w-full bg-black rounded-2xl border border-slate-800 shadow-2xl overflow-hidden aspect-video group/video mx-auto ${!generatedVideo ? 'flex items-center justify-center bg-slate-900' : ''}`}>
+            <div className={"relative w-full bg-black rounded-2xl border border-slate-800 shadow-2xl overflow-hidden aspect-video group/video mx-auto " + (!generatedVideo ? "flex items-center justify-center bg-slate-900" : "")}>
               
               {!generatedVideo && !isGenerating ? (
                 <div className="text-center space-y-4 max-w-md px-6 flex flex-col items-center">
@@ -546,7 +530,7 @@ const App = () => {
                    {/* Frame Progress Indicator */}
                    <div className="flex gap-2">
                        {[0,1,2,3].map(i => (
-                           <div key={i} className={`w-3 h-3 rounded-full ${progress > (i*25) ? 'bg-purple-500' : 'bg-slate-800'}`}></div>
+                           <div key={i} className={"w-3 h-3 rounded-full " + (progress > (i*25) ? "bg-purple-500" : "bg-slate-800")}></div>
                        ))}
                    </div>
                 </div>
@@ -555,22 +539,22 @@ const App = () => {
                   {/* --- RENDER ENGINE --- */}
                   <div className="w-full h-full relative overflow-hidden bg-black select-none">
                     
-                    {/* 1. Base Image Layer (Cycling through frames) */}
+                    {/* 1. Base Image Layer */}
                     <div className="absolute inset-0 w-full h-full">
                          {generatedVideo.frames.map((frame, index) => (
                              <div 
                                 key={index}
-                                className={`absolute inset-0 w-full h-full transition-opacity duration-0 ${index === currentFrameIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                                className={"absolute inset-0 w-full h-full transition-opacity duration-0 " + (index === currentFrameIndex ? "opacity-100 z-10" : "opacity-0 z-0")}
                              >
                                 <div className="w-full h-full"
                                     style={{
                                         transform: getTransform(),
-                                        transition: 'transform 0.05s linear',
-                                        transformOrigin: 'center center'
+                                        transition: "transform 0.05s linear",
+                                        transformOrigin: "center center"
                                     }}>
                                     <img 
                                         src={frame} 
-                                        alt={`Frame ${index}`}
+                                        alt={"Frame " + index}
                                         className="w-full h-full object-cover" 
                                     />
                                 </div>
@@ -581,11 +565,11 @@ const App = () => {
                     {/* 2. VFX Layers */}
                     <div className="absolute inset-0 pointer-events-none z-20">
                        <FilmGrain />
-                       {isPlaying && motionMode === 'fast' && <SpeedLines />}
+                       {isPlaying && motionMode === "fast" && <SpeedLines />}
                        {isPlaying && <Particles type={activeEffect} />}
                     </div>
 
-                    {/* 3. Replay/Start Overlay - ONLY visible when paused */}
+                    {/* 3. Replay/Start Overlay */}
                     {!isPlaying && (
                       <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-sm z-30 cursor-pointer group/play" onClick={togglePlay}>
                          <div className="flex flex-col items-center gap-3 transform group-hover/play:scale-105 transition-transform duration-300">
@@ -593,16 +577,14 @@ const App = () => {
                                 {currentTime >= selectedDuration ? <RefreshCw className="w-6 h-6 text-white" /> : <Play className="w-6 h-6 text-white fill-white ml-1" />}
                              </div>
                              <span className="text-sm font-semibold tracking-wide text-white">
-                                {currentTime >= selectedDuration ? 'Replay Video' : 'Play Video'}
+                                {currentTime >= selectedDuration ? "Replay Video" : "Play Video"}
                              </span>
                          </div>
                       </div>
                     )}
                     
-                    {/* 4. Controls Overlay - HIDDEN unless paused or hovered */}
-                    <div className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent transition-opacity duration-300 z-40 
-                        ${isPlaying ? 'opacity-0 group-hover/video:opacity-100' : 'opacity-100'}
-                    `}>
+                    {/* 4. Controls Overlay */}
+                    <div className={"absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent transition-opacity duration-300 z-40 " + (isPlaying ? "opacity-0 group-hover/video:opacity-100" : "opacity-100")}>
                         <div className="flex items-center gap-4 mb-2">
                            <div 
                              className="flex-1 h-1 bg-white/30 rounded-full cursor-pointer relative group/timeline hover:h-1.5 transition-all"
@@ -610,11 +592,11 @@ const App = () => {
                            >
                               <div 
                                 className="absolute top-0 left-0 h-full bg-purple-500 rounded-full pointer-events-none" 
-                                style={{width: `${(currentTime / selectedDuration) * 100}%`}}
+                                style={{width: ((currentTime / selectedDuration) * 100) + "%"}}
                               ></div>
                               {/* Frame Markers */}
                               {[1,2,3].map(i => (
-                                  <div key={i} className="absolute top-0 w-[1px] h-full bg-black/50" style={{left: `${(i/4)*100}%`}}></div>
+                                  <div key={i} className="absolute top-0 w-[1px] h-full bg-black/50" style={{left: ((i/4)*100) + "%"}}></div>
                               ))}
                            </div>
                         </div>
@@ -625,7 +607,7 @@ const App = () => {
                               <button onClick={togglePlay} className="text-white hover:text-purple-400 transition-colors flex items-center gap-1.5">
                                  {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : (currentTime >= selectedDuration ? <RefreshCw className="w-4 h-4" /> : <Play className="w-4 h-4 fill-current" />)}
                                  <span className="text-xs font-semibold hidden sm:inline-block">
-                                    {isPlaying ? 'Pause' : (currentTime >= selectedDuration ? 'Replay' : 'Play')}
+                                    {isPlaying ? "Pause" : (currentTime >= selectedDuration ? "Replay" : "Play")}
                                  </span>
                               </button>
                               
@@ -636,7 +618,7 @@ const App = () => {
                               {/* MUTE */}
                               <button onClick={() => setIsMuted(!isMuted)} className="text-slate-300 hover:text-white flex items-center gap-1.5 ml-2">
                                 {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                                <span className="text-xs font-semibold hidden sm:inline-block">{isMuted ? 'Unmute' : 'Mute'}</span>
+                                <span className="text-xs font-semibold hidden sm:inline-block">{isMuted ? "Unmute" : "Mute"}</span>
                               </button>
                               
                               {/* DOWNLOAD */}
@@ -692,11 +674,11 @@ const App = () => {
                     <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-500 uppercase flex items-center gap-1"><Palette className="w-3 h-3"/> Style</span>
                         <div className="flex bg-slate-950 p-1 rounded-md border border-slate-800">
-                           {['Cinematic', 'Anime', 'Realistic', '3D'].map(s => (
+                           {["Cinematic", "Anime", "Realistic", "3D"].map(s => (
                              <button 
                                key={s}
                                onClick={() => setSelectedStyle(s)}
-                               className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${selectedStyle === s ? 'bg-slate-800 text-white shadow-sm' : 'text-slate-500 hover:text-slate-300'}`}
+                               className={"px-2 py-0.5 rounded text-[10px] font-medium transition-colors " + (selectedStyle === s ? "bg-slate-800 text-white shadow-sm" : "text-slate-500 hover:text-slate-300")}
                              >
                                {s}
                              </button>
@@ -712,9 +694,9 @@ const App = () => {
                              <button 
                                key={d}
                                onClick={() => setSelectedDuration(d)}
-                               className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${selectedDuration === d ? 'bg-slate-800 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+                               className={"px-2 py-1 rounded text-[10px] font-medium transition-colors " + (selectedDuration === d ? "bg-slate-800 text-white" : "text-slate-500 hover:text-slate-300")}
                              >
-                               {d}s
+                               {d + "s"}
                              </button>
                            ))}
                         </div>
@@ -727,16 +709,16 @@ const App = () => {
                     <div className="flex items-center gap-2 mr-2">
                            <span className="font-bold text-slate-500 uppercase hidden sm:inline-block">Aspect</span>
                            <div className="flex bg-slate-950 p-1 rounded-md border border-slate-800">
-                               <button onClick={() => setAspectRatio('16:9')} className={`px-2 py-1 rounded text-[10px] ${aspectRatio==='16:9' ? 'bg-slate-800 text-white' : 'text-slate-500'}`}>16:9</button>
-                               <button onClick={() => setAspectRatio('9:16')} className={`px-2 py-1 rounded text-[10px] ${aspectRatio==='9:16' ? 'bg-slate-800 text-white' : 'text-slate-500'}`}>9:16</button>
+                               <button onClick={() => setAspectRatio("16:9")} className={"px-2 py-1 rounded text-[10px] " + (aspectRatio==="16:9" ? "bg-slate-800 text-white" : "text-slate-500")}>16:9</button>
+                               <button onClick={() => setAspectRatio("9:16")} className={"px-2 py-1 rounded text-[10px] " + (aspectRatio==="9:16" ? "bg-slate-800 text-white" : "text-slate-500")}>9:16</button>
                            </div>
                     </div>
 
                     <div className="h-6 w-px bg-slate-700 hidden sm:block mx-1"></div>
 
                     <button 
-                        onClick={() => setActiveEffect(activeEffect === 'rain' ? 'none' : 'rain')} 
-                        className={`px-3 py-1 rounded-md border flex flex-col items-center justify-center transition-colors ${activeEffect === 'rain' ? 'bg-blue-900/30 border-blue-500/50 text-blue-400' : 'border-slate-800 text-slate-500 hover:bg-slate-800'}`} 
+                        onClick={() => setActiveEffect(activeEffect === "rain" ? "none" : "rain")} 
+                        className={"px-3 py-1 rounded-md border flex flex-col items-center justify-center transition-colors " + (activeEffect === "rain" ? "bg-blue-900/30 border-blue-500/50 text-blue-400" : "border-slate-800 text-slate-500 hover:bg-slate-800")} 
                         title="Rain FX"
                     >
                         <div className="flex items-center gap-1.5">
@@ -746,8 +728,8 @@ const App = () => {
                         <span className="text-[7px] font-medium opacity-60 mt-0.5 leading-none">Weather FX</span>
                     </button>
                     <button 
-                        onClick={() => setMotionMode(motionMode === 'fast' ? 'cinematic' : 'fast')} 
-                        className={`px-3 py-1 rounded-md border flex flex-col items-center justify-center transition-colors ${motionMode === 'fast' ? 'bg-red-900/30 border-red-500/50 text-red-400' : 'border-slate-800 text-slate-500 hover:bg-slate-800'}`} 
+                        onClick={() => setMotionMode(motionMode === "fast" ? "cinematic" : "fast")} 
+                        className={"px-3 py-1 rounded-md border flex flex-col items-center justify-center transition-colors " + (motionMode === "fast" ? "bg-red-900/30 border-red-500/50 text-red-400" : "border-slate-800 text-slate-500 hover:bg-slate-800")} 
                         title="Fast Motion"
                     >
                         <div className="flex items-center gap-1.5">
