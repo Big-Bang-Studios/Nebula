@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Play, Pause, Sparkles, Clock, Settings, Film, History, Loader2, Share2, Wand2, MonitorPlay, Menu, X, RefreshCw, CloudRain, Snowflake, Flame, Wind, Zap, Gauge, Volume2, VolumeX, Palette, Layers, ChevronRight, ChevronLeft, Download } from 'lucide-react';
 // --- CUSTOM NEBULA LOGO ---
@@ -126,18 +125,15 @@ this.gainNode.gain.setTargetAtTime(muted ? 0 : 0.1, t, 0.1);
 }
 const audioEngine = new AudioSynth();
 // --- VFX COMPONENTS ---
-const FilmGrain = () => {
-const bgUrl = "url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")";
-return (
+const FilmGrain = () => (
 <div
-className="absolute inset-0 pointer-events-none opacity-[0.15] mix-blend-overlay z-10"
+className="absolute inset-0 pointer-events-none opacity-[0.12] mix-blend-overlay z-10"
 style={{
-backgroundImage: bgUrl,
-animation: "grain 1s steps(5) infinite"
+backgroundImage: "radial-gradient(rgba(255,255,255,0.25) 1px, transparent 0)",
+backgroundSize: "3px 3px"
 }}
 />
 );
-};
 const SpeedLines = () => {
 const lines = useMemo(() => Array.from({ length: 15 }).map((_, i) => ({
 rotate: Math.random() * 360,
@@ -310,7 +306,7 @@ parameters: { sampleCount: 1, aspectRatio: aspectRatio === "16:9" ? "16:9" : "9:
 );
 const results = await Promise.all(imagePromises);
 const frames = results.map(data =>
-data.predictions?.[0]?.bytesBase64Encoded
+data.predictions && data.predictions[0] && data.predictions[0].bytesBase64Encoded
 ? "data:image/png;base64," + data.predictions[0].bytesBase64Encoded
 : null
 ).filter(Boolean);
@@ -342,7 +338,7 @@ clearInterval(progressInterval);
 }
 };
 const getTransform = () => {
-const timePerFrame = selectedDuration / (generatedVideo?.frames.length || 1);
+const timePerFrame = selectedDuration / (generatedVideo && generatedVideo.frames ? generatedVideo.frames.length : 1);
 const timeInCurrentFrame = currentTime % timePerFrame;
 const frameProgress = timeInCurrentFrame / timePerFrame;
 if (motionMode === "fast") {
@@ -367,7 +363,7 @@ setCurrentTime(percentage * selectedDuration);
 return (
 <div className="h-screen w-full bg-slate-950 text-slate-100 font-sans selection:bg-purple-500/30 overflow-hidden flex flex-col md:flex-row">
 <style>
-{"@keyframes warpSpeed { 0% { opacity: 0; transform: rotate(var(--r)) translateX(100px) scaleX(0.1); } 50% { opacity: 0.8; } 100% { opacity: 0; transform: rotate(var(--r)) translateX(600px) scaleX(1.5); } } @keyframes grain { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-5%, 5%); } } @keyframes rain { 0% { transform: translateY(0); opacity:0; } 20% { opacity:1; } 100% { transform: translateY(600px); opacity:0; } }"}
+{"@keyframes warpSpeed { 0% { opacity: 0; transform: rotate(var(--r)) translateX(100px) scaleX(0.1); } 50% { opacity: 0.8; } 100% { opacity: 0; transform: rotate(var(--r)) translateX(600px) scaleX(1.5); } } @keyframes rain { 0% { transform: translateY(0); opacity:0; } 20% { opacity:1; } 100% { transform: translateY(600px); opacity:0; } }"}
 </style>
 {/* Sidebar */}
 <div className={"fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex flex-col shrink-0 " + (isSidebarOpen ? "translate-x-0" : "-translate-x-full")}>
