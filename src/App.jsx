@@ -13,16 +13,16 @@ const NebulaIcon = ({ className = "w-8 h-8" }) => (
 <stop offset="100%" stopColor="#7c3aed" />
 </linearGradient>
 <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-<feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+<feGaussianBlur stdDeviation="3" result="coloredBlur" />
 <feMerge>
-<feMergeNode in="coloredBlur"/>
-<feMergeNode in="SourceGraphic"/>
+<feMergeNode in="coloredBlur" />
+<feMergeNode in="SourceGraphic" />
 </feMerge>
 </filter>
 </defs>
-<ellipse cx="50" cy="50" rx="38" ry="12" transform="rotate(-30 50 50)" stroke="url(#nebulaGrad1)" strokeWidth="4" strokeLinecap="round" filter="url(#glow)"/>
-<ellipse cx="50" cy="50" rx="38" ry="12" transform="rotate(30 50 50)" stroke="url(#nebulaGrad2)" strokeWidth="4" strokeLinecap="round" filter="url(#glow)"/>
-<path d="M50 25 L53 45 L75 50 L53 55 L50 75 L47 55 L25 50 L47 45 Z" fill="white" filter="url(#glow)"/>
+<ellipse cx="50" cy="50" rx="38" ry="12" transform="rotate(-30 50 50)" stroke="url(#nebulaGrad1)" strokeWidth="4" strokeLinecap="round" filter="url(#glow)" />
+<ellipse cx="50" cy="50" rx="38" ry="12" transform="rotate(30 50 50)" stroke="url(#nebulaGrad2)" strokeWidth="4" strokeLinecap="round" filter="url(#glow)" />
+<path d="M50 25 L53 45 L75 50 L53 55 L50 75 L47 55 L25 50 L47 45 Z" fill="white" filter="url(#glow)" />
 <circle cx="50" cy="50" r="4" fill="#ffffff" />
 </svg>
 );
@@ -124,69 +124,6 @@ this.gainNode.gain.setTargetAtTime(muted ? 0 : 0.1, t, 0.1);
 }
 }
 const audioEngine = new AudioSynth();
-// --- VFX COMPONENTS ---
-const FilmGrain = () => (
-<div
-className="absolute inset-0 pointer-events-none opacity-[0.12] mix-blend-overlay z-10"
-style={{
-backgroundImage: "radial-gradient(rgba(255,255,255,0.25) 1px, transparent 0)",
-backgroundSize: "3px 3px"
-}}
-/>
-);
-const SpeedLines = () => {
-const lines = useMemo(() => Array.from({ length: 15 }).map((_, i) => ({
-rotate: Math.random() * 360,
-delay: Math.random() * 0.5,
-length: Math.random() * 50 + 50
-})), []);
-return (
-<div className="absolute inset-0 pointer-events-none z-20 overflow-hidden flex items-center justify-center">
-{lines.map((line, i) => (
-<div
-key={i}
-className="absolute bg-gradient-to-r from-transparent via-white/30 to-transparent w-[300px] h-[1px]"
-style={{
-transform: "rotate(" + line.rotate + "deg) translateX(400px)",
-animation: "warpSpeed 0.3s linear infinite",
-animationDelay: line.delay + "s",
-width: line.length + "%"
-}}
-/>
-))}
-</div>
-);
-};
-const Particles = ({ type }) => {
-const particles = useMemo(() => {
-const count = type === "rain" ? 80 : 30;
-return Array.from({ length: count }).map((_, i) => ({
-left: Math.random() * 100 + "%",
-animationDuration: (Math.random() * 2 + 0.5) + "s",
-animationDelay: -(Math.random() * 2) + "s",
-opacity: Math.random() * 0.5 + 0.3,
-}));
-}, [type]);
-if (type === "rain") {
-return (
-<div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
-{particles.map((p, i) => (
-<div key={i} className="absolute w-[1px] h-12 bg-blue-100/40"
-style={{
-left: p.left,
-top: "-20px",
-transform: "rotate(10deg)",
-animation: "rain " + p.animationDuration + " linear infinite",
-animationDelay: p.animationDelay,
-opacity: p.opacity
-}}
-/>
-))}
-</div>
-);
-}
-return null;
-};
 // --- MAIN APP ---
 const App = () => {
 const [prompt, setPrompt] = useState("");
@@ -225,7 +162,7 @@ return () => clearInterval(interval);
 }, [isPlaying, selectedDuration]);
 // Sync Frame Index with Time
 useEffect(() => {
-if (!generatedVideo || !generatedVideo.frames) return;
+if (!generatedVideo || !generatedVideo.frames || generatedVideo.frames.length === 0) return;
 const timePerFrame = selectedDuration / generatedVideo.frames.length;
 const index = Math.floor(currentTime / timePerFrame);
 const safeIndex = Math.min(index, generatedVideo.frames.length - 1);
@@ -360,18 +297,11 @@ const x = e.clientX - rect.left;
 const percentage = Math.max(0, Math.min(1, x / rect.width));
 setCurrentTime(percentage * selectedDuration);
 };
-// Safe variables for classes
 const timelineProgressWidth = Math.min(100, Math.max(0, (currentTime / selectedDuration) * 100)) + "%";
-const controlsOverlayClass = isPlaying ? "absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent transition-opacity duration-300 z-40 opacity-0 group-hover/video:opacity-100" : "absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent transition-opacity duration-300 z-40 opacity-100";
-const sidebarClass = isSidebarOpen ? "fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex flex-col shrink-0 translate-x-0" : "fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex flex-col shrink-0 -translate-x-full";
-const containerClass = generatedVideo ? "relative w-full bg-black rounded-2xl border border-slate-800 shadow-2xl overflow-hidden aspect-video group/video mx-auto" : "relative w-full bg-black rounded-2xl border border-slate-800 shadow-2xl overflow-hidden aspect-video group/video mx-auto flex items-center justify-center bg-slate-900";
 return (
 <div className="h-screen w-full bg-slate-950 text-slate-100 font-sans selection:bg-purple-500/30 overflow-hidden flex flex-col md:flex-row">
-<style>
-{"@keyframes warpSpeed { 0% { opacity: 0; transform: rotate(var(--r)) translateX(100px) scaleX(0.1); } 50% { opacity: 0.8; } 100% { opacity: 0; transform: rotate(var(--r)) translateX(600px) scaleX(1.5); } } @keyframes rain { 0% { transform: translateY(0); opacity:0; } 20% { opacity:1; } 100% { transform: translateY(600px); opacity:0; } }"}
-</style>
 {/* Sidebar */}
-<div className={sidebarClass}>
+<div className={isSidebarOpen ? "fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex flex-col shrink-0 translate-x-0" : "fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 md:flex flex-col shrink-0 -translate-x-full"}>
 <div className="p-4 border-b border-slate-800 flex items-center justify-between">
 <div className="flex items-center gap-3">
 <NebulaIcon className="w-8 h-8"/>
@@ -434,8 +364,7 @@ className="group relative rounded-xl overflow-hidden cursor-pointer border borde
 {/* Player Area */}
 <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 flex flex-col items-center">
 <div className="w-full max-w-5xl space-y-4 my-auto min-h-[300px]">
-{/* VIDEO CONTAINER */}
-<div className={containerClass}>
+<div className={generatedVideo ? "relative w-full bg-black rounded-2xl border border-slate-800 shadow-2xl overflow-hidden aspect-video group/video mx-auto" : "relative w-full bg-black rounded-2xl border border-slate-800 shadow-2xl overflow-hidden aspect-video group/video mx-auto flex items-center justify-center bg-slate-900"}>
 {!generatedVideo && !isGenerating && (
 <div className="text-center space-y-4 max-w-md px-6 flex flex-col items-center">
 <NebulaIcon className="w-20 h-20 mb-2 opacity-80"/>
@@ -446,10 +375,7 @@ className="group relative rounded-xl overflow-hidden cursor-pointer border borde
 {isGenerating && (
 <div className="flex flex-col items-center gap-6 w-full max-w-sm px-4">
 <div className="relative w-12 h-12">
-<svg className="animate-spin w-full h-full text-purple-600" viewBox="0 0 24 24">
-<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-</svg>
+<Loader2 className="animate-spin w-full h-full text-purple-600"/>
 </div>
 <div className="text-center">
 <p className="text-sm font-medium text-white">Generating Sequence...</p>
@@ -467,22 +393,13 @@ className="group relative rounded-xl overflow-hidden cursor-pointer border borde
 <div className="w-full h-full relative overflow-hidden bg-black select-none">
 {/* Base Image Layer */}
 <div className="absolute inset-0 w-full h-full">
-{generatedVideo.frames.map((frame, index) => {
-const frameOpacityClass = (index === currentFrameIndex) ? "absolute inset-0 w-full h-full opacity-100 z-10" : "absolute inset-0 w-full h-full opacity-0 z-0";
-return (
-<div key={index} className={frameOpacityClass}>
+{generatedVideo.frames.map((frame, index) => (
+<div key={index} className={index === currentFrameIndex ? "absolute inset-0 w-full h-full opacity-100 z-10" : "absolute inset-0 w-full h-full opacity-0 z-0"}>
 <div className="w-full h-full" style={{ transform: getTransform(), transformOrigin: "center center" }}>
 <img src={frame} alt="frame" className="w-full h-full object-cover" />
 </div>
 </div>
-);
-})}
-</div>
-{/* VFX Layers */}
-<div className="absolute inset-0 pointer-events-none z-20">
-<FilmGrain/>
-{isPlaying && motionMode === "fast" && <SpeedLines/>}
-{isPlaying && <Particles type="{activeEffect}"/>}
+))}
 </div>
 {/* Play Overlay */}
 {!isPlaying && (
@@ -498,13 +415,13 @@ return (
 </div>
 )}
 {/* Controls Overlay */}
-<div className={controlsOverlayClass}>
+<div className={isPlaying ? "absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent transition-opacity duration-300 z-40 opacity-0 group-hover/video:opacity-100" : "absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent transition-opacity duration-300 z-40 opacity-100"}>
 <div className="flex items-center gap-4 mb-2">
 <div className="flex-1 h-1 bg-white/30 rounded-full cursor-pointer relative hover:h-1.5 transition-all" onClick={handleSeek}>
 <div className="absolute top-0 left-0 h-full bg-purple-500 rounded-full pointer-events-none" style={{ width: timelineProgressWidth }}></div>
-<div className="absolute top-0 left-1/4 w-[1px] h-full bg-black/50"></div>
-<div className="absolute top-0 left-2/4 w-[1px] h-full bg-black/50"></div>
-<div className="absolute top-0 left-3/4 w-[1px] h-full bg-black/50"></div>
+<div className="absolute top-0 left-1/4 w-px h-full bg-black/50"></div>
+<div className="absolute top-0 left-2/4 w-px h-full bg-black/50"></div>
+<div className="absolute top-0 left-3/4 w-px h-full bg-black/50"></div>
 </div>
 </div>
 <div className="flex items-center justify-between">
@@ -562,10 +479,10 @@ className="w-24 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bol
 <span>Generate</span>
 </button>
 </div>
-{/* Bottom Settings Row */}
+{/* Bottom Settings Row /}
 <div className="px-4 pb-4 flex flex-wrap gap-y-2 gap-x-6 items-center justify-between text-[10px] sm:text-xs border-t border-slate-800/50 pt-3">
 <div className="flex flex-wrap gap-4">
-{/* Style Selector */}
+{/ Style Selector */}
 <div className="flex items-center gap-2">
 <span className="font-bold text-slate-500 uppercase flex items-center gap-1"><Palette className="w-3 h-3"/> Style</span>
 <div className="flex bg-slate-950 p-1 rounded-md border border-slate-800">
@@ -602,8 +519,8 @@ className={"px-2 py-1 rounded text-[10px] font-medium transition-colors " + (sel
 <div className="flex items-center gap-2 mr-2">
 <span className="font-bold text-slate-500 uppercase hidden sm:inline-block">Aspect</span>
 <div className="flex bg-slate-950 p-1 rounded-md border border-slate-800">
-<button onClick={() => setAspectRatio("16:9")} className={"px-2 py-1 rounded text-[10px] " + (aspectRatio==="16:9" ? "bg-slate-800 text-white" : "text-slate-500")}>16:9</button>
-<button onClick={() => setAspectRatio("9:16")} className={"px-2 py-1 rounded text-[10px] " + (aspectRatio==="9:16" ? "bg-slate-800 text-white" : "text-slate-500")}>9:16</button>
+<button onClick={() => setAspectRatio("16:9")} className={"px-2 py-1 rounded text-[10px] " + (aspectRatio === "16:9" ? "bg-slate-800 text-white" : "text-slate-500")}>16:9</button>
+<button onClick={() => setAspectRatio("9:16")} className={"px-2 py-1 rounded text-[10px] " + (aspectRatio === "9:16" ? "bg-slate-800 text-white" : "text-slate-500")}>9:16</button>
 </div>
 </div>
 <div className="h-6 w-px bg-slate-700 hidden sm:block mx-1"></div>
